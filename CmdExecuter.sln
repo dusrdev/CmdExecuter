@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31612.314
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CmdExecuter", "CmdExecuter\CmdExecuter.csproj", "{A583245F-E81B-4961-AA01-4A75B7C9CBFE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A583245F-E81B-4961-AA01-4A75B7C9CBFE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A583245F-E81B-4961-AA01-4A75B7C9CBFE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A583245F-E81B-4961-AA01-4A75B7C9CBFE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A583245F-E81B-4961-AA01-4A75B7C9CBFE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {2535217D-1D31-40A5-A105-B15344632AFB}
+	EndGlobalSection
+EndGlobal
