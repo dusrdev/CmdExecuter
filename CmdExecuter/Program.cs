@@ -6,7 +6,6 @@ namespace CmdExecuter
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
         }
     }
 }
