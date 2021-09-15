@@ -1,5 +1,5 @@
 ﻿namespace CmdExecuter.Core.Models {
-    public class CommandExecutionError {
+    internal class CommandExecutionError {
         public string Command { get; init; }
         public string Error {  get; init; }
 

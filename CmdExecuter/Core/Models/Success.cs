@@ -1,5 +1,5 @@
 ﻿namespace CmdExecuter.Core.Models {
-    public class Success {
+    internal class Success {
         /// <summary>
         /// Inner message
         /// </summary>

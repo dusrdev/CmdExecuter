@@ -1,5 +1,5 @@
 ﻿namespace CmdExecuter.Core.Models {
-    public class Error {
+    internal class Error {
         /// <summary>
         /// Inner message
         /// </summary>
