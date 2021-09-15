@@ -11,7 +11,7 @@ using OneOf;
 
 namespace CmdExecuter.Core.Components
 {
-    public class FileReader
+    internal class FileReader
     {
         public List<FileView> Results { get; private set;  }
 
@@ -23,7 +23,7 @@ namespace CmdExecuter.Core.Components
         /// Used to get a list of tuples (fileName, list of lines), it searches all .txt files in current directory.
         /// </summary>
         /// <param name="token"></param>
-        public async Task<OneOf<Success, Error>> ReadLinesFromAllTextFilesInDirectoryAsync(CancellationToken token = default) {
+        public async Task<OneOf<Success, Error>> ReadLinesFromAllTextFilesInDirectoryAsync() {
             string currentDirectory = Directory.GetCurrentDirectory();
             var textFiles = Directory.GetFiles(currentDirectory, "*.txt");
 
