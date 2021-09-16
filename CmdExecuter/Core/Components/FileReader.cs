@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
+using CmdExecuter.Core.Helpers;
 using CmdExecuter.Core.Models;
 
 using OneOf;
@@ -13,17 +14,13 @@ namespace CmdExecuter.Core.Components
 {
     internal class FileReader
     {
-        public List<FileView> Results { get; private set;  }
+        public SortedSet<FileView> Results { get; private set;  }
 
         public FileReader() {
-            Results = new List<FileView>();
+            Results = new SortedSet<FileView>(Comparers.FileViewComparer);
         }
 
-        /// <summary>
-        /// Used to get a list of tuples (fileName, list of lines), it searches all .txt files in current directory.
-        /// </summary>
-        /// <param name="token"></param>
-        public async Task<OneOf<Success, Error>> ReadLinesFromAllTextFilesInDirectoryAsync() {
+        public async Task<OneOf<Success, Error>> ReadLinesFromAllTextFilesInDirectoryAsync(CancellationToken token = default) {
             string currentDirectory = Directory.GetCurrentDirectory();
             var textFiles = Directory.GetFiles(currentDirectory, "*.txt");
 
@@ -31,14 +28,17 @@ namespace CmdExecuter.Core.Components
             FileView[] files = null;
 
             try {
-                _ = Parallel.ForEach(textFiles, t => taskBag.Add(GetFileAndLinesAsync(t)));
+                ParallelOptions options = new() {
+                    CancellationToken = token
+                };
+                _ = Parallel.ForEach(textFiles, options, t => taskBag.Add(GetFileAndLinesAsync(t, token)));
                 files = await Task.WhenAll(taskBag);
             } catch (TaskCanceledException) {
                 return new Error("Operation canceled.");
             }
 
             foreach (var file in files) {
-                Results.Add(file);
+                var add = Results.Add(file);
             }
 
             return Results.Any() ?
@@ -46,13 +46,8 @@ namespace CmdExecuter.Core.Components
                 : new Error("No files have been found...");
         }
 
-        /// <summary>
-        /// Returns a FileView
-        /// </summary>
-        /// <param name="filePath">absolute file path</param>
-        /// <param name="token"></param>
         private async Task<FileView> GetFileAndLinesAsync(string filePath, CancellationToken token = default) {
-            return new(filePath[(filePath.LastIndexOf('\\') + 1)..], new(await File.ReadAllLinesAsync(filePath, token)));
+            return new(Helper.GetFileName(filePath), await File.ReadAllLinesAsync(filePath, token));
         }
     }
 }
