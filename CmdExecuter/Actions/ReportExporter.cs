@@ -7,29 +7,28 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace CmdExecuter.Actions {
-    internal class ErrorExporter {
-        private List<CommandExecutionError> Errors { get; init; }
+    internal class ReportExporter {
+        private SortedSet<FileExecutionOutput> FileOutputs { get; init; }
         private string Report { get; set; }
 
         /// <summary>
         /// Initializes the class
         /// </summary>
-        /// <param name="errors">List of execution errors</param>
+        /// <param name="outputs">List of execution errors</param>
         /// <remarks>
         /// Continue with .CreateReport() -> Export()
         /// </remarks>
-        public ErrorExporter(List<CommandExecutionError> errors) {
-            Errors = errors;
+        public ReportExporter(SortedSet<FileExecutionOutput> outputs) {
+            FileOutputs = outputs;
         }
 
         /// <summary>
         /// Creates the report
         /// </summary>
         public void CreateReport() {
-            if (!Errors.Any()) {
+            if (!FileOutputs.Any()) {
                 return;
             }
             const string PageStart = @"<!DOCTYPE html>
@@ -51,14 +50,22 @@ th:first-child {
   width: 15%;
 }
 tr:first-child {
-	color: white;
-    background-color: #00ff87;
+	color: black;
+    background-color: #d787ff;
 }
 tr {
   background-color: #FFFFFF;
 }
 h1 {
-	color: #00ff87;
+	color: black;
+}
+.success {
+    color: black;
+    background-color: #00ff87;
+}
+.error {
+    color: white;
+    background-color: #990000;
 }
 </style>
 </head>
@@ -68,19 +75,35 @@ h1 {
             const string StartTable = "<table>";
             const string EndTable = "</table>";
             const string TableTitle = @"<tr>
+    <th>Result</th>
     <th>Command</th>
-    <th>Error</th>
+    <th>Output</th>
   </tr>";
             var builder = new StringBuilder();
             _ = builder.AppendLine(PageStart);
-                _ = builder.AppendLine("<h1>Execution Errors:</h1>");
+
+            foreach (var file in FileOutputs) {
+                _ = builder.AppendLine($"<h1>{file.FileName}</h1>");
                 _ = builder.AppendLine(StartTable);
                 _ = builder.AppendLine(TableTitle);
-                foreach (var error in Errors) {
-                    _ = builder.AppendLine($"<tr><th>{error.Command}</th>");
-                    _ = builder.AppendLine($"<th>{error.Error}</th></tr>");
+
+                if (file.HasSuccesses) {
+                    foreach (var success in file.Successes) {
+                        _ = builder.AppendLine("<tr><th class=\"success\">Success</th>");
+                        _ = builder.AppendLine($"<th>{success.Command}</th>");
+                        _ = builder.AppendLine($"<th>{success.Message}</th></tr>");
+                    }
+                }
+
+                if (file.HasErrors) {
+                    foreach (var error in file.Errors) {
+                        _ = builder.AppendLine($"<tr><th class=\"error\">Error</th>");
+                        _ = builder.AppendLine($"<th>{error.Command}</th>");
+                        _ = builder.AppendLine($"<th>{error.Error}</th></tr>");
+                    }
                 }
                 _ = builder.AppendLine(EndTable);
+            }
             _ = builder.AppendLine(PageEnd);
             Report = builder.ToString().Trim('\r', '\n');
         }
@@ -95,7 +118,7 @@ h1 {
             } catch (Exception ex) {
                 return new Error(ex.Message);
             }
-            return new Success("Successfully export report.");
+            return new Success("Successfully exported report.");
         }
     }
 }

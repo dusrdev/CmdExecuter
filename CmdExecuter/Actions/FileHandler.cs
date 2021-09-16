@@ -1,4 +1,5 @@
 ﻿using CmdExecuter.Core.Components;
+using CmdExecuter.Core.Helpers;
 using CmdExecuter.Core.Models;
 
 using OneOf;
@@ -11,9 +12,13 @@ using System.Threading.Tasks;
 
 namespace CmdExecuter.Actions {
     internal class FileHandler {
-        private List<FileView> Files { get; set; }
+        private SortedSet<FileView> Files { get; set; }
 
-        private List<CommandExecutionError> Errors { get; set; }
+        private SortedSet<FileExecutionOutput> FileOutputs { get; set; }
+
+        private bool HasErrorOccurred { get; set; }
+
+        private bool LogSuccess { get; set; }
 
         public FileHandler() { }
 
@@ -23,8 +28,8 @@ namespace CmdExecuter.Actions {
         public void SelectFiles() {
             FileReader reader = new();
             var fileRead = Task.Run(() => reader.ReadLinesFromAllTextFilesInDirectoryAsync());
-
             fileRead.Wait();
+
             fileRead.Result.Switch(success => {
                 AnsiConsole.MarkupLine($"[bold]{success.Message}[/]");
             },
@@ -35,7 +40,13 @@ namespace CmdExecuter.Actions {
 
             AnsiConsole.MarkupLine(string.Empty);
 
-            var fileNames = reader.Results.Select(f => f.Name);
+            Files = reader.Results;
+
+            SortedSet<string> fileNames = new();
+
+            foreach (var file in Files) {
+                fileNames.Add(file.FileName);
+            }
 
             var selectedFileNames = AnsiConsole.Prompt(
                 new MultiSelectionPrompt<string>()
@@ -44,28 +55,64 @@ namespace CmdExecuter.Actions {
                 .InstructionsText("[grey85](Press [springgreen1]<space>[/] to toggle a file, [springgreen1]<enter>[/] to accept)[/]")
                 .AddChoices(fileNames));
 
-            Files = reader.Results.FindAll(f => selectedFileNames.Contains(f.Name));
+            List<FileView> UnselectedFiles = new();
+
+            foreach (var file in Files) {
+                if (!selectedFileNames.Contains(file.FileName)) {
+                    UnselectedFiles.Add(file);
+                }
+            }
+
+            foreach (var file in UnselectedFiles) {
+                _ = Files.Remove(file);
+            }
         }
 
         /// <summary>
         /// Executes all commands
         /// </summary>
         public void Execute() {
-            Errors = new();
+            FileOutputs = new(Comparers.FileExecutionOutputComparer);
 
-            AnsiConsole.MarkupLine("[springgreen1]Beginning Execution.[/]");
+            PromptUserToLogSuccess();
             AnsiConsole.MarkupLine("");
 
+            AnsiConsole.MarkupLine("[violet]Beginning Execution.[/]");
+
             foreach (var file in Files) {
-                foreach (var command in file.Lines) {
-                    AnsiConsole.Markup($"[White]Executing: [darkslategray1]{command}[/][violet]  -->  [/][/]");
-                    var execution = Task.Run(() => new CommandExecuter(command).ExecuteAsync());
+                FileExecutionOutput fileOutput = new(file.FileName);
+
+                AnsiConsole.MarkupLine("");
+                AnsiConsole.MarkupLine($"[white][violet]++[/] Executing file: [springgreen1]{file.FileName}[/][/]");
+                AnsiConsole.MarkupLine("");
+
+                foreach (var command in file.Commands) {
+                    AnsiConsole.Markup($"[White][violet]++++++[/] Executing command: [darkslategray1]{command}[/][violet]  -->  [/][/]");
+                    OneOf<CommandExecutionSuccess, CommandExecutionError> executionResult = default;
+
+                    AnsiConsole.Status().SpinnerStyle = new Style(foreground: Color.SpringGreen1);
+
+                    var execution = Task.Run(() => new CommandExecuter(command, LogSuccess).ExecuteAsync());
                     execution.Wait();
-                    HandleSingleExecution(execution.Result);
+                    executionResult = execution.Result;
+
+                    executionResult.Switch(success => {
+                        AnsiConsole.MarkupLine("[springgreen1]Successful![/]");
+                        if (LogSuccess) {
+                            fileOutput.AddSuccess(success);
+                        }
+                    },
+                        error => {
+                            AnsiConsole.MarkupLine("[#990000]Failed![/]");
+                            fileOutput.AddError(error);
+                            HasErrorOccurred = true;
+                        });
                 }
+
+                FileOutputs.Add(fileOutput);
             }
 
-            if (Errors.Any()) {
+            if (LogSuccess || HasErrorOccurred) {
                 PromptToExportReport();
             } else {
                 AnsiConsole.MarkupLine("\n[bold]All commands have executed [springgreen1]Successfully[/][/]");
@@ -73,52 +120,36 @@ namespace CmdExecuter.Actions {
         }
 
         /// <summary>
-        /// Handles a single command execution -> displays result of execution and logs if resulted in error
+        /// Prompts the user to log success in addition to errors
         /// </summary>
-        /// <param name="command">The executed command</param>
-        /// <param name="executionResult">Result of execution</param>
-        private void HandleSingleExecution(OneOf<Success, CommandExecutionError> executionResult) {
-            executionResult.Switch(
-                success => {
-                    AnsiConsole.MarkupLine("[springgreen1]Successful![/]");
-                },
-                error => {
-                    AnsiConsole.MarkupLine("[#990000]Failed![/]");
-                    Errors.Add(error);
-                });
+        private void PromptUserToLogSuccess() {
+            LogSuccess = AnsiConsole.Confirm("[white]Do you want to log standard output [yellow]in addition[/] to errors?[/]");
         }
 
         /// <summary>
         /// Gives the user the option to export errors to report or dismiss and follows up on selection.
         /// </summary>
         private void PromptToExportReport() {
-            Dictionary<string, ExportOptions> selectionOptions = new();
+            string title = (HasErrorOccurred, LogSuccess) switch {
+                (true, false) => "[bold #990000]Errors have been found...[/]",
+                (true, true) => "[white][bold #990000]Some[/] errors have been found...[/]",
+                (_, _) => "[bold][white]All commands have executed [springgreen1]successfully![/][/][/]"
+            };
 
-            _ = selectionOptions.TryAdd(key: "[white]Export [bold]HTML[/] report.[/]", value: ExportOptions.Export);
-            _ = selectionOptions.TryAdd("[white]Dismiss.[/]", ExportOptions.Dismiss);
+            AnsiConsole.MarkupLine("");
+            AnsiConsole.MarkupLine(title);
+            AnsiConsole.MarkupLine("");
 
-            var selection = AnsiConsole.Prompt(new SelectionPrompt<string>().
-                Title("\n[white][bold #990000]Errors have been found, Options[/]:[/]").
-                AddChoices(selectionOptions.Keys));
-
-            switch (selectionOptions[selection]) {
-                case ExportOptions.Export: {
-                        ExportErrors();
-                        break;
-                    }
-                case ExportOptions.Dismiss: {
-                        AnsiConsole.MarkupLine("[yellow]Dismissed.[/]");
-                        break;
-                    }
-                default: break;
+            if (AnsiConsole.Confirm("[white]Do you want to export detailed [yellow]HTML[/] report to folder?[/]")) {
+                ExportReport();
             }
         }
 
         /// <summary>
         /// Attempts to export execution errors
         /// </summary>
-        private void ExportErrors() {
-            var reportExporter = new ErrorExporter(Errors);
+        private void ExportReport() {
+            var reportExporter = new ReportExporter(FileOutputs);
             reportExporter.CreateReport();
             var exportResult = reportExporter.Export();
             exportResult.Switch(

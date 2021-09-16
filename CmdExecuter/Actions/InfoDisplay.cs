@@ -6,26 +6,18 @@ namespace CmdExecuter.Actions {
 
         public void Display() {
             AnsiConsole.Render(new Markup(string.Join('\n', new string[] {
-                "[white][bold deepskyblue1]CmdExecuter[/] by [bold springgreen1]David Shnayder[/]",
+                "[white][yellow]Usage Instructions:[/]",
                 "",
-                "[yellow]Overview:[/]",
-                "This is an open source application, developed in c# .NET 5.",
-                "This application is a very useful tool primarily targeting system administrators.",
+                "[springgreen1]1.[/] Create .txt files with all the commands you want in the order you want them in.",
+                "  [springgreen1]*[/] Lines that are prefixed with [springgreen1]#[/] will be ignored. Use this to disable commands or to write comments.",
+                "  [springgreen1]*[/] you can create many of them, such as: [lightsteelblue1]\"WindowsRestore.txt\"[/], [lightsteelblue1]\"CloudSyncing.txt\"[/] and so on...",
+                "[springgreen1]2.[/] Place all of them in a folder together with [bold deepskyblue1]CmdExecuter.exe[/].",
+                "[springgreen1]3.[/] The app will scan and read all commands in all files and categorize them by file name",
+                "[springgreen1]4.[/] then it will let you select which files you want to execute, and it will execute all selected files by order",
+                "[springgreen1]5.[/] and inform you of the result of every command execution, should you want to, it can produce a detailed report.",
                 "",
-                "If you have ever had the need to execute many CMD (command prompt) commands and it was uncomfortable for you",
-                "because you had to remember all the commands and their order and so on, then this is for you.",
-                "",
-                "[yellow]Usage Instructions:[/]",
-                "Create .txt files with all the commands you want in the order you want them in.",
-                "Write every command like you would in CMD, if you want to disable/ignore a command, prefix it with [#990000]#[/]",
-                "you can create many of them, such as: [lightsteelblue1]\"WindowsRestore.txt\"[/], [lightsteelblue1]\"CloudSyncing.txt\"[/] and so on...",
-                "Place all of them in a folder together with [bold deepskyblue1]CmdExecuter.exe[/].",
-                "The app will scan and read all commands in all files and categorize them by file name",
-                "then it will let you select which files you want to execute, and it will execute all selected files by order",
-                "and inform you of the result of every command execution.",
-                "",
-                "[yellow]Credits:[/]",
-                "For convenience and better user experience this app uses [violet]2[/] third-party packages: [violet]SpectreConsole[/] and [violet]OneOf[/].[/]\n",
+                "For more information, go the GitHub repository:",
+                "[violet]https://github.com/dusrdev/CmdExecuter[/]\n[/]",
             })));
             AnsiConsole.MarkupLine("");
         }
