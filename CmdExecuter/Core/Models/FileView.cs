@@ -2,20 +2,26 @@
 
 namespace CmdExecuter.Core.Models {
     internal struct FileView {
-        public string Name { get; init; }
-        public List<string> Lines { get; init; }
+        public string FileName { get; init; }
+        public string[] Commands { get; init; }
 
-        public FileView(string name, List<string> lines) {
-            Name = name;
-            Lines = FilterCommands(lines);
+        public FileView(string fileName, string[] commands) {
+            FileName = fileName;
+            Commands = FilterCommands(commands);
         }
 
         /// <summary>
         /// Filters commands to allow disabling commands in a file
         /// </summary>
         /// <param name="commands"></param>
-        private static List<string> FilterCommands(List<string> commands) {
-            return commands.FindAll(c => !c.StartsWith("#"));
+        private static string[] FilterCommands(string[] commands) {
+            List<string> result = new();
+            foreach (string command in commands) {
+                if (!command.StartsWith("#")) {
+                    result.Add(command);
+                }
+            }
+            return result.ToArray();
         }
     }
 }
