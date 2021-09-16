@@ -7,7 +7,6 @@ using OneOf;
 using Spectre.Console;
 
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace CmdExecuter.Actions {
@@ -19,6 +18,7 @@ namespace CmdExecuter.Actions {
         private bool HasErrorOccurred { get; set; }
 
         private bool LogSuccess { get; set; }
+        private bool ShouldOpenWindows { get; set; }
 
         public FileHandler() { }
 
@@ -55,10 +55,12 @@ namespace CmdExecuter.Actions {
                 .InstructionsText("[grey85](Press [springgreen1]<space>[/] to toggle a file, [springgreen1]<enter>[/] to accept)[/]")
                 .AddChoices(fileNames));
 
+            HashSet<string> selected = new(selectedFileNames);
+
             List<FileView> UnselectedFiles = new();
 
             foreach (var file in Files) {
-                if (!selectedFileNames.Contains(file.FileName)) {
+                if (!selected.Contains(file.FileName)) {
                     UnselectedFiles.Add(file);
                 }
             }
@@ -75,6 +77,7 @@ namespace CmdExecuter.Actions {
             FileOutputs = new(Comparers.FileExecutionOutputComparer);
 
             PromptUserToLogSuccess();
+
             AnsiConsole.MarkupLine("");
 
             AnsiConsole.MarkupLine("[violet]Beginning Execution.[/]");
@@ -92,7 +95,7 @@ namespace CmdExecuter.Actions {
 
                     AnsiConsole.Status().SpinnerStyle = new Style(foreground: Color.SpringGreen1);
 
-                    var execution = Task.Run(() => new CommandExecuter(command, LogSuccess).ExecuteAsync());
+                    var execution = Task.Run(() => new CommandExecuter(command).ExecuteAsync());
                     execution.Wait();
                     executionResult = execution.Result;
 
