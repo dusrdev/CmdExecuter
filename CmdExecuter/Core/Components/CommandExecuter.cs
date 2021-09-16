@@ -14,11 +14,8 @@ namespace CmdExecuter.Core.Components {
         private StringBuilder ErrorOutput { get; set; }
         private StringBuilder StandardOutput { get; set; }
 
-        private bool LogSuccess { get; init; }
-
-        public CommandExecuter(string command, bool logSuccess) {
+        public CommandExecuter(string command) {
             _command = command;
-            LogSuccess = logSuccess;
             ErrorOutput = new();
             StandardOutput = new();
         }
@@ -57,14 +54,44 @@ namespace CmdExecuter.Core.Components {
             return result;
         }
 
+        public async Task<OneOf<CommandExecutionSuccess, CommandExecutionError>> ExecuteInNewWindowAsync(CancellationToken token = default) {
+            Process process = new();
+            ProcessStartInfo startInfo = new();
+
+            startInfo.WindowStyle = ProcessWindowStyle.Normal;
+            startInfo.FileName = "cmd.exe";
+            startInfo.Arguments = $"/C {_command}";
+            startInfo.UseShellExecute = false;
+            process.StartInfo = startInfo;
+            process.Start();
+            await process.WaitForExitAsync(token);
+
+            var standardOutput = process.StandardOutput.ReadToEnd();
+            var errorOutput = process.StandardError.ReadToEnd();
+
+            OneOf<CommandExecutionSuccess, CommandExecutionError> result = process.ExitCode switch {
+                0 => standardOutput.Length switch {
+                    0 => new CommandExecutionSuccess(_command, "Execution was successful without any output."),
+                    _ => new CommandExecutionError(_command, standardOutput)
+                },
+                _ => (standardOutput, errorOutput) switch {
+                    ("", _) => new CommandExecutionError(_command, errorOutput),
+                    (_, _) => new CommandExecutionError(_command, $"Success:\n{StandardOutput}\nError:{ErrorOutput}"),
+                }
+            };
+
+            process.Close();
+            process.Dispose();
+
+            return result;
+        }
+
         private void Process_ErrorDataReceived(object sender, DataReceivedEventArgs e) {
             ErrorOutput.Append(e.Data);
         }
 
         private void Process_OutputDataReceived(object sender, DataReceivedEventArgs e) {
-            if (LogSuccess) {
-                StandardOutput.Append(e.Data);
-            }
+            StandardOutput.Append(e.Data);
         }
     }
 }
