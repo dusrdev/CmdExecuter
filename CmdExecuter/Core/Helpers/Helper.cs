@@ -15,15 +15,12 @@ namespace CmdExecuter.Core.Helpers {
 
 
         /// <summary>
-        /// Returns the string in the string builder if not empty, or alternative if it is empty.
+        /// Returns the string if not empty, or alternative if it is empty.
         /// </summary>
-        /// <param name="builder"></param>
+        /// <param name="str"></param>
         /// <param name="alternative"></param>
-        public static string EmptyAlternative(this StringBuilder builder, string alternative) {
-            if (string.IsNullOrEmpty(builder.ToString())) {
-                return alternative;
-            }
-            return builder.ToString();
+        public static string EmptyAlternative(this string str, string alternative) {
+            return string.IsNullOrEmpty(str) ? alternative : str;
         }
     }
 }
