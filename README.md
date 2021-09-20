@@ -35,7 +35,7 @@ This app is intended for system administrators and people who constantly execute
 
 ## Downloads
 
-The following link contains 2 zip files which I builded, assembled and synced with this public folder:
+The following link contains 2 zip files which I compiled, assembled and synced with this public folder:
 
 1. Regular - Light version (single .exe file), depends on the system being up to date and having .NET runtime installed.
 2. FrameworkIndependent - Heavier version (folder), contains all the files required to run this app including the .NET runtime, perfect for using on legacy or client machines in which you can't guarantee the conditions.
