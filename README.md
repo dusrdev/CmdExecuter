@@ -2,6 +2,10 @@
 
 ## Description
 
+Lightweight tool that allows to execute **cmd** commands from **.txt** files
+
+## Target
+
 This app is intended for system administrators and people who constantly execute different cmd commands and are tired of entering them one by one.
 
 ## Usage
