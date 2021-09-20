@@ -107,13 +107,13 @@ namespace CmdExecuter.Actions {
                     executionResult = execution.Result;
 
                     executionResult.Switch(success => {
-                        AnsiConsole.MarkupLine("[springgreen1]Successful![/]");
+                        AnsiConsole.MarkupLine("[springgreen1]Success[/]");
                         if (LogSuccess) {
                             fileOutput.AddSuccess(success);
                         }
                     },
                         error => {
-                            AnsiConsole.MarkupLine("[#990000]Failed![/]");
+                            AnsiConsole.MarkupLine("[#990000]Fail[/]");
                             fileOutput.AddError(error);
                             HasErrorOccurred = true;
                         });
@@ -122,11 +122,7 @@ namespace CmdExecuter.Actions {
                 FileOutputs.Add(fileOutput);
             }
 
-            if (LogSuccess || HasErrorOccurred) {
-                PromptToExportReport();
-            } else {
-                AnsiConsole.MarkupLine("\n[bold]All commands have executed [springgreen1]Successfully[/][/]");
-            }
+            PromptToExportReport();
         }
 
         /// <summary>
@@ -143,11 +139,16 @@ namespace CmdExecuter.Actions {
             string title = (HasErrorOccurred, LogSuccess) switch {
                 (true, false) => "[bold #990000]Errors have been found...[/]",
                 (true, true) => "[white][bold #990000]Some[/] errors have been found...[/]",
-                (_, _) => "[bold][white]All commands have executed [springgreen1]successfully![/][/][/]"
+                (_, _) => "[bold][white]All commands have executed [springgreen1]successfully[/][/][/]"
             };
 
             AnsiConsole.MarkupLine("");
             AnsiConsole.MarkupLine(title);
+
+            if (!HasErrorOccurred && !LogSuccess) {
+                return;
+            }
+
             AnsiConsole.MarkupLine("");
 
             if (AnsiConsole.Confirm("[white]Do you want to export detailed [yellow]HTML[/] report to folder?[/]")) {
