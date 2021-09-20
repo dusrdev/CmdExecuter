@@ -2,7 +2,7 @@
 
 ## Description
 
-Lightweight tool that allows to execute **cmd** commands from **.txt** files
+Lightweight tool that allows the user to execute **cmd** commands from **.txt** files
 
 ## Target
 
