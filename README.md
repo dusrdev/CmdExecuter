@@ -4,7 +4,7 @@
 
 This app is intended for system administrators and people who constantly execute different cmd commands and are tired of entering them one by one.
 
-### Usage
+## Usage
 
 1. Create .txt files with all the commands you want in the order you want them in.
     - Lines that are prefixed with # will be ignored. Use this to disable commands or to write comments.
@@ -14,18 +14,18 @@ This app is intended for system administrators and people who constantly execute
 4. then it will let you select which files you want to execute, and it will execute all selected files by order
 5. and inform you of the result of every command execution, should you want to, it can produce a detailed report.
 
-### Safety tips
+## Safety tips
 
 - The application was developed with using multiple files in purpose, use this to separate your commands and execute only what is required.
 - Always inspect the files *before* execution to prevent unwanted outcomes.
 - Make sure to test all commands beforehand to know the predictable outcome.
 - Use absolute paths as this calls on **cmd.exe** which might not recognize the paths otherwise.
 
-### Disclaimer
+## Disclaimer
 
 ***Use this application at your own risk.*** I do not guarantee all commands will work with this. Also, As this application redirect output to executes with the systems cmd.exe file, Many commands execute with different behavior, thus it is nearly impossible to test all cases or to guarantee 100% success.
 
-#### Downloads
+## Downloads
 
 The following link contains 2 zip files which I builded, assembled and synced with this public folder:
 
