@@ -113,7 +113,7 @@ h1 {
         /// </summary>
         public OneOf<Success, Error> Export() {
             try {
-                using TextWriter w = new StreamWriter("ExecutionErrors.html");
+                using TextWriter w = new StreamWriter("Report.html");
                 w.Write(Report);
             } catch (Exception ex) {
                 return new Error(ex.Message);
