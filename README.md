@@ -4,7 +4,7 @@
 
 ## Description
 
-Lightweight tool that allows the user to execute __**cmd**__ commands from **.txt** files
+Lightweight tool that allows the user to execute __cmd__ commands from **.txt** files
 
 ## Target
 
