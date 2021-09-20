@@ -1,10 +1,5 @@
 ﻿namespace CmdExecuter.Core.Models {
-    internal class Success {
-        /// <summary>
-        /// Inner message
-        /// </summary>
-        public readonly string Message;
-
+    internal class Success : Result {
         /// <summary>
         /// Default constructor
         /// </summary>

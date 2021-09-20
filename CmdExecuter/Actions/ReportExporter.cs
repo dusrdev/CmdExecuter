@@ -91,7 +91,7 @@ h1 {
                     foreach (var success in file.Successes) {
                         _ = builder.AppendLine("<tr><th class=\"success\">Success</th>");
                         _ = builder.AppendLine($"<th>{success.Command}</th>");
-                        _ = builder.AppendLine($"<th>{success.Message}</th></tr>");
+                        _ = builder.AppendLine($"<th>{success.Output}</th></tr>");
                     }
                 }
 
@@ -99,7 +99,7 @@ h1 {
                     foreach (var error in file.Errors) {
                         _ = builder.AppendLine($"<tr><th class=\"error\">Error</th>");
                         _ = builder.AppendLine($"<th>{error.Command}</th>");
-                        _ = builder.AppendLine($"<th>{error.Error}</th></tr>");
+                        _ = builder.AppendLine($"<th>{error.Output}</th></tr>");
                     }
                 }
                 _ = builder.AppendLine(EndTable);

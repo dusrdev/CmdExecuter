@@ -4,7 +4,7 @@
 
         public void Display() {
             var handler = new FileHandler();
-            handler.SelectFiles();
+            handler.ScanForFiles();
             handler.Execute();
         }
     }

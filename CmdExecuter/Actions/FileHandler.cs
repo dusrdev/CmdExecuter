@@ -18,30 +18,36 @@ namespace CmdExecuter.Actions {
         private bool HasErrorOccurred { get; set; }
 
         private bool LogSuccess { get; set; }
-        private bool ShouldOpenWindows { get; set; }
 
         public FileHandler() { }
 
         /// <summary>
         /// Gets a list of the selected file names
         /// </summary>
-        public void SelectFiles() {
+        public void ScanForFiles() {
             FileReader reader = new();
             var fileRead = Task.Run(() => reader.ReadLinesFromAllTextFilesInDirectoryAsync());
             fileRead.Wait();
 
             fileRead.Result.Switch(success => {
                 AnsiConsole.MarkupLine($"[bold]{success.Message}[/]");
+                AnsiConsole.MarkupLine(string.Empty);
+                Files = reader.Results;
+                SelectFiles();
             },
             error => {
                 AnsiConsole.MarkupLine($"[bold #990000]{error.Message}[/]");
                 return;
             });
+        }
 
-            AnsiConsole.MarkupLine(string.Empty);
-
-            Files = reader.Results;
-
+        /// <summary>
+        /// Selects the files the user wants to execute
+        /// </summary>
+        /// <remarks>
+        /// Is only executed if <c>ScanForFiles()</c> finds files...
+        /// </remarks>
+        private void SelectFiles() {
             SortedSet<string> fileNames = new();
 
             foreach (var file in Files) {
@@ -69,6 +75,7 @@ namespace CmdExecuter.Actions {
                 _ = Files.Remove(file);
             }
         }
+
 
         /// <summary>
         /// Executes all commands

@@ -1,10 +1,5 @@
 ﻿namespace CmdExecuter.Core.Models {
-    internal class Error {
-        /// <summary>
-        /// Inner message
-        /// </summary>
-        public readonly string Message;
-
+    internal class Error : Result {
         /// <summary>
         /// Holds the value of whether the error was internal or caused by the user
         /// </summary>
