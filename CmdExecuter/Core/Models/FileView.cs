@@ -17,9 +17,10 @@ namespace CmdExecuter.Core.Models {
         private static string[] FilterCommands(string[] commands) {
             List<string> result = new();
             foreach (string command in commands) {
-                if (!command.StartsWith("#")) {
-                    result.Add(command);
+                if (string.IsNullOrWhiteSpace(command) || command.StartsWith("#")) {
+                    continue;
                 }
+                result.Add(command);
             }
             return result.ToArray();
         }
