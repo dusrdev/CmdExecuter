@@ -90,7 +90,7 @@ h1 {
                 if (file.HasSuccesses) {
                     foreach (var success in file.Successes) {
                         _ = builder.AppendLine("<tr><th class=\"success\">Success</th>");
-                        _ = builder.AppendLine($"<th>{success.Command}</th>");
+                        _ = builder.AppendLine($"<th><code>{success.Command}</code></th>");
                         _ = builder.AppendLine($"<th>{success.Output}</th></tr>");
                     }
                 }
@@ -98,7 +98,7 @@ h1 {
                 if (file.HasErrors) {
                     foreach (var error in file.Errors) {
                         _ = builder.AppendLine($"<tr><th class=\"error\">Error</th>");
-                        _ = builder.AppendLine($"<th>{error.Command}</th>");
+                        _ = builder.AppendLine($"<th><code>{error.Command}</code></th>");
                         _ = builder.AppendLine($"<th>{error.Output}</th></tr>");
                     }
                 }
