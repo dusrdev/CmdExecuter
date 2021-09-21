@@ -31,10 +31,7 @@ namespace CmdExecuter.Actions {
             if (!FileOutputs.Any()) {
                 return;
             }
-            const string PageStart = @"<!DOCTYPE html>
-<html>
-<head>
-<style>
+            const string PageStart = @"<!DOCTYPE html><html><head><style>
 body {
     white-space: pre-wrap;
     width: 98%;
@@ -98,7 +95,7 @@ h1 {
     <th class=""output"">Output</th>
   </tr>";
             var builder = new StringBuilder();
-            _ = builder.AppendLine(PageStart);
+            _ = builder.Append(PageStart);
 
             foreach (var file in FileOutputs) {
                 _ = builder.AppendLine($"<h1>{file.FileName}</h1>");
@@ -129,7 +126,7 @@ h1 {
 
                 _ = builder.AppendLine(EndTable);
             }
-            _ = builder.AppendLine(PageEnd);
+            _ = builder.Append(PageEnd);
             Report = builder.ToString().Trim('\r', '\n');
         }
 
