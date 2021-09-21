@@ -93,16 +93,16 @@ namespace CmdExecuter.Actions {
                 FileExecutionOutput fileOutput = new(file.FileName);
 
                 AnsiConsole.MarkupLine("");
-                AnsiConsole.MarkupLine($"[white][violet]++[/] Executing file: [springgreen1]{file.FileName}[/][/]");
+                AnsiConsole.MarkupLine($"[white][violet]++[/] Executing [springgreen1]{file.Commands.Length}[/] commands in file: [springgreen1]{file.FileName}[/][/]");
                 AnsiConsole.MarkupLine("");
 
-                foreach (var command in file.Commands) {
-                    AnsiConsole.Markup($"[White][violet]++++++[/] Executing command: [darkslategray1]{command}[/][violet]  -->  [/][/]");
+                for (int i = 0; i < file.Commands.Length; i++) {
+                    AnsiConsole.Markup($"[White][violet]++++++[/] Executing command: [darkslategray1]{i + 1}[/][violet]  -->  [/][/]");
                     OneOf<CommandExecutionSuccess, CommandExecutionError> executionResult = default;
 
                     AnsiConsole.Status().SpinnerStyle = new Style(foreground: Color.SpringGreen1);
 
-                    var execution = Task.Run(() => new CommandExecuter(command).ExecuteAsync());
+                    var execution = Task.Run(() => new CommandExecuter(file.Commands[i]).ExecuteAsync());
                     execution.Wait();
                     executionResult = execution.Result;
 
