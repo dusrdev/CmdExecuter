@@ -1,11 +1,7 @@
-﻿using System.Threading.Tasks;
-
-using OneOf;
+﻿using OneOf;
 using CmdExecuter.Core.Models;
 using System.Diagnostics;
-using System.Threading;
 using System.Text;
-using CmdExecuter.Core.Helpers;
 
 namespace CmdExecuter.Core.Components {
     internal class CommandExecuter {
@@ -23,7 +19,7 @@ namespace CmdExecuter.Core.Components {
             StandardOutputBuilder = new();
         }
 
-        public async Task<OneOf<CommandExecutionSuccess, CommandExecutionError>> ExecuteAsync(CancellationToken token = default) {
+        public OneOf<CommandExecutionSuccess, CommandExecutionError, CommandExecutionMix> Execute() {
             Process process = new();
             ProcessStartInfo startInfo = new();
 
@@ -38,25 +34,20 @@ namespace CmdExecuter.Core.Components {
             process.OutputDataReceived += Process_OutputDataReceived;
             process.ErrorDataReceived += Process_ErrorDataReceived;
             process.Start();
-            await process.WaitForExitAsync(token);
 
-            StandardOutput = StandardOutputBuilder.Length == 0 ?
-                await process.StandardOutput.ReadToEndAsync()
-                : StandardOutputBuilder.ToString();
+            process.BeginOutputReadLine();
+            process.BeginErrorReadLine();
 
-            ErrorOutput = ErrorOutputBuilder.Length == 0 ?
-                await process.StandardError.ReadToEndAsync()
-                : ErrorOutputBuilder.ToString();
+            process.WaitForExit();
 
-            OneOf <CommandExecutionSuccess, CommandExecutionError> result = process.ExitCode switch {
-                0 => StandardOutput.Length switch {
-                    0 => new CommandExecutionSuccess(_command, "Execution was successful without any output."),
-                    _ => new CommandExecutionError(_command, StandardOutput)
-                },
-                _ => (StandardOutput.Length, ErrorOutput.Length) switch {
-                    (0, _) => new CommandExecutionError(_command, StandardOutput.EmptyAlternative("Execution failed without any output.")),
-                    (_, _) => new CommandExecutionError(_command, $"Success:\n{StandardOutput}\nError:{ErrorOutput}"),
-                }
+            StandardOutput = StandardOutputBuilder.ToString().Trim();
+            ErrorOutput = ErrorOutputBuilder.ToString().Trim();
+
+            OneOf<CommandExecutionSuccess, CommandExecutionError, CommandExecutionMix> result = (StandardOutput.Length, ErrorOutput.Length) switch {
+                (0, 0) => new CommandExecutionSuccess(_command, "Execution was successful without any output."),
+                (_, 0) => new CommandExecutionSuccess(_command, StandardOutput),
+                (0, _) => new CommandExecutionError(_command, ErrorOutput),
+                (_, _) => new CommandExecutionMix(_command, StandardOutput, ErrorOutput)
             };
 
             process.Close();
@@ -66,11 +57,11 @@ namespace CmdExecuter.Core.Components {
         }
 
         private void Process_ErrorDataReceived(object sender, DataReceivedEventArgs e) {
-            ErrorOutputBuilder.Append(e.Data);
+            ErrorOutputBuilder.AppendLine(e.Data);
         }
 
         private void Process_OutputDataReceived(object sender, DataReceivedEventArgs e) {
-            StandardOutputBuilder.Append(e.Data);
+            StandardOutputBuilder.AppendLine(e.Data);
         }
     }
 }
