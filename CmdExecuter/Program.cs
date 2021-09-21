@@ -3,12 +3,13 @@ using CmdExecuter.Core.Models;
 
 using Spectre.Console;
 
-using System.Threading.Tasks;
-
 namespace CmdExecuter {
     class Program {
         static void Main() {
             DisplayMainMenu();
+
+            AnsiConsole.Markup("[white]Press any key to exit... [/]");
+            System.Console.ReadKey();
         }
 
         /// <summary>
