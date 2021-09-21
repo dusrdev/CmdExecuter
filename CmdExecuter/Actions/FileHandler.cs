@@ -15,9 +15,8 @@ namespace CmdExecuter.Actions {
 
         private SortedSet<FileExecutionOutput> FileOutputs { get; set; }
 
-        private bool HasErrorOccurred { get; set; }
-
-        private bool LogSuccess { get; set; }
+        private int Successes = 0;
+        private int Errors = 0;
 
         public FileHandler() { }
 
@@ -83,8 +82,6 @@ namespace CmdExecuter.Actions {
         public void Execute() {
             FileOutputs = new(Comparers.FileExecutionOutputComparer);
 
-            PromptUserToLogSuccess();
-
             AnsiConsole.MarkupLine("");
 
             AnsiConsole.MarkupLine("[violet]Beginning Execution.[/]");
@@ -101,20 +98,23 @@ namespace CmdExecuter.Actions {
 
                     AnsiConsole.Status().SpinnerStyle = new Style(foreground: Color.SpringGreen1);
 
-                    var execution = Task.Run(() => new CommandExecuter(file.Commands[i]).ExecuteAsync());
-                    execution.Wait();
-                    var executionResult = execution.Result;
+                    var executionResult = new CommandExecuter(file.Commands[i]).Execute();
 
                     executionResult.Switch(success => {
                         AnsiConsole.MarkupLine("[springgreen1]Success[/]");
-                        if (LogSuccess) {
-                            fileOutput.AddResult(success);
-                        }
+                        fileOutput.AddResult(success);
+                        Successes++;
                     },
                         error => {
                             AnsiConsole.MarkupLine("[#990000]Fail[/]");
                             fileOutput.AddResult(error);
-                            HasErrorOccurred = true;
+                            Errors++;
+                        },
+                        mix => {
+                            AnsiConsole.MarkupLine("[darkslategray1]Mixed output[/]");
+                            fileOutput.AddResult(mix);
+                            Successes++;
+                            Errors++;
                         });
                 }
 
@@ -125,28 +125,18 @@ namespace CmdExecuter.Actions {
         }
 
         /// <summary>
-        /// Prompts the user to log success in addition to errors
-        /// </summary>
-        private void PromptUserToLogSuccess() {
-            LogSuccess = AnsiConsole.Confirm("[white]Do you want to log standard output [yellow]in addition[/] to errors?[/]");
-        }
-
-        /// <summary>
         /// Gives the user the option to export errors to report or dismiss and follows up on selection.
         /// </summary>
         private void PromptToExportReport() {
-            string title = (HasErrorOccurred, LogSuccess) switch {
-                (true, false) => "[bold #990000]Errors have been found...[/]",
-                (true, true) => "[white][bold #990000]Some[/] errors have been found...[/]",
-                (_, _) => "[bold][white]All commands have executed [springgreen1]successfully[/][/][/]"
+            string title = (Successes, Errors) switch {
+                (0, 0) => "[bold #990000]Nothing has been executed...[/]",
+                (_, 0) => "[bold white]All commands have executed [springgreen1]successfully[/][/]",
+                (0, _) => "[white]all commands have [#990000]failed[/]...[/]",
+                (_, _) => "[bold white]There are [darkslategray1]mixed[/] results, some commands were [springgreen1]successful[/] and some [#990000]failed[/].[/]"
             };
 
             AnsiConsole.MarkupLine("");
             AnsiConsole.MarkupLine(title);
-
-            if (!HasErrorOccurred && !LogSuccess) {
-                return;
-            }
 
             AnsiConsole.MarkupLine("");
 
@@ -159,6 +149,7 @@ namespace CmdExecuter.Actions {
         /// Attempts to export execution errors
         /// </summary>
         private void ExportReport() {
+            AnsiConsole.MarkupLine("");
             var reportExporter = new ReportExporter(FileOutputs);
             reportExporter.CreateReport();
             var exportResult = reportExporter.Export();
@@ -169,6 +160,7 @@ namespace CmdExecuter.Actions {
                 error => {
                     AnsiConsole.MarkupLine($"[#990000]{error.Message}[/]");
                 });
+            AnsiConsole.MarkupLine("");
         }
     }
 }

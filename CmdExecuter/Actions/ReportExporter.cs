@@ -35,30 +35,43 @@ namespace CmdExecuter.Actions {
 <html>
 <head>
 <style>
+body {
+    white-space: pre-wrap;
+    width: 98%;
+    height: 100%;
+}
 table {
+  word-break: break-word;
   font-family: 'Helvetica';
   border-collapse: collapse;
   font-size: small;
-  width: 100%;
 }
 td, th {
   border: 1px solid #dddddd;
+  vertical-align: top;
   text-align: left;
   padding: 8px;
 }
-th:first-child {
-  width: 15%;
-}
 tr:first-child {
-	color: black;
-    background-color: #d787ff;
+	color: white;
+    background-color: black;
 }
 tr {
   background-color: #FFFFFF;
 }
 h1 {
+    text-decoration: underline;
     font-family: 'Comic Sans MS';
 	color: black;
+}
+.result {
+  width: 10%;
+}
+.command {
+  width: 30%;
+}
+.output {
+  width: 60%;
 }
 .success {
     color: black;
@@ -68,6 +81,10 @@ h1 {
     color: white;
     background-color: #990000;
 }
+.mix {
+    color: black;
+    background-color: #87ffff;
+}
 </style>
 </head>
 <body>";
@@ -76,9 +93,9 @@ h1 {
             const string StartTable = "<table>";
             const string EndTable = "</table>";
             const string TableTitle = @"<tr>
-    <th>Result</th>
-    <th>Command</th>
-    <th>Output</th>
+    <th class=""result"">Result</th>
+    <th class=""command"">Command</th>
+    <th class=""output"">Output</th>
   </tr>";
             var builder = new StringBuilder();
             _ = builder.AppendLine(PageStart);
@@ -91,14 +108,22 @@ h1 {
                 foreach (var result in file.Results) {
                     result.Switch(
                         success => {
-                            _ = builder.AppendLine("<tr><th class=\"success\">Success</th>");
-                            _ = builder.AppendLine($"<th><code>{success.Command}</code></th>");
-                            _ = builder.AppendLine($"<th>{success.Output}</th></tr>");
+                            _ = builder.AppendLine("<tr><th class=\"success result\">Success</th>");
+                            _ = builder.AppendLine($"<th class=\"command\"><code>{success.Command}</code></th>");
+                            _ = builder.AppendLine($"<th class=\"output\">{success.Output}</th></tr>");
                         },
                         error => {
-                            _ = builder.AppendLine($"<tr><th class=\"error\">Error</th>");
-                            _ = builder.AppendLine($"<th><code>{error.Command}</code></th>");
-                            _ = builder.AppendLine($"<th>{error.Output}</th></tr>");
+                            _ = builder.AppendLine($"<tr><th class=\"error result\">Error</th>");
+                            _ = builder.AppendLine($"<th class=\"command\"><code>{error.Command}</code></th>");
+                            _ = builder.AppendLine($"<th class=\"output\">{error.Output}</th></tr>");
+                        },
+                        mix => {
+                            _ = builder.AppendLine($"<tr><th class=\"mix result\">Mixed - Success</th>");
+                            _ = builder.AppendLine($"<th class=\"command\"><code>{mix.Command}</code></th>");
+                            _ = builder.AppendLine($"<th class=\"output\">{mix.SuccessOutput}</th></tr>");
+                            _ = builder.AppendLine($"<tr><th class=\"mix result\">Mixed - Error</th>");
+                            _ = builder.AppendLine($"<th class=\"command\"><code>\"\"</code></th>");
+                            _ = builder.AppendLine($"<th class=\"output\">{mix.ErrorOutput}</th></tr>");
                         });
                 }
 
