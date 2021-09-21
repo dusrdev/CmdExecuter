@@ -98,23 +98,22 @@ namespace CmdExecuter.Actions {
 
                 for (int i = 0; i < file.Commands.Length; i++) {
                     AnsiConsole.Markup($"[White][violet]++++++[/] Executing command: [darkslategray1]{i + 1}[/][violet]  -->  [/][/]");
-                    OneOf<CommandExecutionSuccess, CommandExecutionError> executionResult = default;
 
                     AnsiConsole.Status().SpinnerStyle = new Style(foreground: Color.SpringGreen1);
 
                     var execution = Task.Run(() => new CommandExecuter(file.Commands[i]).ExecuteAsync());
                     execution.Wait();
-                    executionResult = execution.Result;
+                    var executionResult = execution.Result;
 
                     executionResult.Switch(success => {
                         AnsiConsole.MarkupLine("[springgreen1]Success[/]");
                         if (LogSuccess) {
-                            fileOutput.AddSuccess(success);
+                            fileOutput.AddResult(success);
                         }
                     },
                         error => {
                             AnsiConsole.MarkupLine("[#990000]Fail[/]");
-                            fileOutput.AddError(error);
+                            fileOutput.AddResult(error);
                             HasErrorOccurred = true;
                         });
                 }
