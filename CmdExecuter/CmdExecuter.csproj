@@ -6,6 +6,11 @@
     <Company>David Shnayder</Company>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <ApplicationIcon>Assets\cmd-terminal.ico</ApplicationIcon>
+    <Authors>David Shnayder</Authors>
+    <Copyright>David Shnayder</Copyright>
+    <PackageIcon>cmd-terminal.png</PackageIcon>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <RepositoryUrl>https://github.com/dusrdev/CmdExecuter</RepositoryUrl>
   </PropertyGroup>
 
   <ItemGroup>
@@ -14,11 +19,21 @@
 
   <ItemGroup>
     <None Include="..\.editorconfig" Link=".editorconfig" />
+    <None Include="..\README.md">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="OneOf" Version="3.0.190" />
     <PackageReference Include="Spectre.Console" Version="0.41.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Assets\cmd-terminal.png">
+      <Pack>True</Pack>
+    </None>
   </ItemGroup>
 
 </Project>
