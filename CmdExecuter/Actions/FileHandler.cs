@@ -90,11 +90,11 @@ namespace CmdExecuter.Actions {
                 FileExecutionOutput fileOutput = new(file.FileName);
 
                 AnsiConsole.MarkupLine("");
-                AnsiConsole.MarkupLine($"[white][violet]++[/] Executing [springgreen1]{file.Commands.Length}[/] commands in file: [springgreen1]{file.FileName}[/][/]");
+                AnsiConsole.MarkupLine($"[white][violet]==[/] Executing [springgreen1]{file.Commands.Length}[/] commands in file: [springgreen1]{file.FileName}[/][/]");
                 AnsiConsole.MarkupLine("");
 
                 for (int i = 0; i < file.Commands.Length; i++) {
-                    AnsiConsole.Markup($"[White][violet]++++++[/] Executing command: [darkslategray1]{i + 1}[/][violet]  -->  [/][/]");
+                    AnsiConsole.Markup($"[White][darkslategray1]----[/] Executing command: [darkslategray1]{i + 1}[/][violet]  -->  [/][/]");
 
                     AnsiConsole.Status().SpinnerStyle = new Style(foreground: Color.SpringGreen1);
 
