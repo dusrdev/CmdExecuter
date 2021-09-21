@@ -36,7 +36,7 @@ namespace CmdExecuter.Actions {
 <head>
 <style>
 table {
-  font-family: arial;
+  font-family: 'Helvetica';
   border-collapse: collapse;
   font-size: small;
   width: 100%;
@@ -57,6 +57,7 @@ tr {
   background-color: #FFFFFF;
 }
 h1 {
+    font-family: 'Comic Sans MS';
 	color: black;
 }
 .success {
@@ -87,21 +88,20 @@ h1 {
                 _ = builder.AppendLine(StartTable);
                 _ = builder.AppendLine(TableTitle);
 
-                if (file.HasSuccesses) {
-                    foreach (var success in file.Successes) {
-                        _ = builder.AppendLine("<tr><th class=\"success\">Success</th>");
-                        _ = builder.AppendLine($"<th><code>{success.Command}</code></th>");
-                        _ = builder.AppendLine($"<th>{success.Output}</th></tr>");
-                    }
+                foreach (var result in file.Results) {
+                    result.Switch(
+                        success => {
+                            _ = builder.AppendLine("<tr><th class=\"success\">Success</th>");
+                            _ = builder.AppendLine($"<th><code>{success.Command}</code></th>");
+                            _ = builder.AppendLine($"<th>{success.Output}</th></tr>");
+                        },
+                        error => {
+                            _ = builder.AppendLine($"<tr><th class=\"error\">Error</th>");
+                            _ = builder.AppendLine($"<th><code>{error.Command}</code></th>");
+                            _ = builder.AppendLine($"<th>{error.Output}</th></tr>");
+                        });
                 }
 
-                if (file.HasErrors) {
-                    foreach (var error in file.Errors) {
-                        _ = builder.AppendLine($"<tr><th class=\"error\">Error</th>");
-                        _ = builder.AppendLine($"<th><code>{error.Command}</code></th>");
-                        _ = builder.AppendLine($"<th>{error.Output}</th></tr>");
-                    }
-                }
                 _ = builder.AppendLine(EndTable);
             }
             _ = builder.AppendLine(PageEnd);
