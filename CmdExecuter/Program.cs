@@ -6,7 +6,11 @@ using Spectre.Console;
 namespace CmdExecuter {
     class Program {
         static void Main() {
-            DisplayMainMenu();
+            var directoryHandler = new DirectoryHandler();
+
+            if (directoryHandler.IsReady()) {
+                DisplayMainMenu(directoryHandler.GetResourcesPath());
+            }
 
             AnsiConsole.Markup("[white]Press any key to exit... [/]");
             System.Console.ReadKey();
@@ -22,24 +26,24 @@ namespace CmdExecuter {
         /// <summary>
         /// Displays file scanner menu
         /// </summary>
-        private static void DisplayFileScanner() {
-            new FileScannerDisplay().Display();
+        private static void DisplayFileScanner(string pathToResources) {
+            new FileScannerDisplay(pathToResources).Display();
         }
 
         /// <summary>
         /// Displays main menu
         /// </summary>
-        private static void DisplayMainMenu() {
+        private static void DisplayMainMenu(string pathToResources) {
             var selectedOption = new MainMenuDisplay().GetSelection();
 
             switch (selectedOption) {
                 case MainMenuSelection.ScanFolder: {
-                        DisplayFileScanner();
+                        DisplayFileScanner(pathToResources);
                         break;
                     }
                 case MainMenuSelection.DisplayInfo: {
                         DisplayInfo();
-                        PromptToReturnToMainMenu();
+                        PromptToReturnToMainMenu(pathToResources);
                         break;
                     }
                 default: break;
@@ -49,10 +53,10 @@ namespace CmdExecuter {
         /// <summary>
         /// Prompts the user to return to main menu
         /// </summary>
-        private static void PromptToReturnToMainMenu() {
+        private static void PromptToReturnToMainMenu(string pathToResources) {
             if (AnsiConsole.Confirm("[white]Return to main menu?[/]")) {
                 AnsiConsole.Clear();
-                DisplayMainMenu();
+                DisplayMainMenu(pathToResources);
             }
         }
     }
