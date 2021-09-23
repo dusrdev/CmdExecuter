@@ -107,17 +107,17 @@ h1 {
                         success => {
                             _ = builder.AppendLine("<tr><th class=\"success result\">Success</th>");
                             _ = builder.AppendLine($"<th class=\"command\"><code>{success.Command}</code></th>");
-                            _ = builder.AppendLine($"<th class=\"output\">{success.Output}</th></tr>");
+                            _ = builder.AppendLine($"<th class=\"output\">{success.SuccessfulOutput}</th></tr>");
                         },
                         error => {
                             _ = builder.AppendLine($"<tr><th class=\"error result\">Error</th>");
                             _ = builder.AppendLine($"<th class=\"command\"><code>{error.Command}</code></th>");
-                            _ = builder.AppendLine($"<th class=\"output\">{error.Output}</th></tr>");
+                            _ = builder.AppendLine($"<th class=\"output\">{error.ErrorOutput}</th></tr>");
                         },
                         mix => {
                             _ = builder.AppendLine($"<tr><th class=\"mix result\">Mixed - Success</th>");
                             _ = builder.AppendLine($"<th class=\"command\"><code>{mix.Command}</code></th>");
-                            _ = builder.AppendLine($"<th class=\"output\">{mix.SuccessOutput}</th></tr>");
+                            _ = builder.AppendLine($"<th class=\"output\">{mix.SuccessfulOutput}</th></tr>");
                             _ = builder.AppendLine($"<tr><th class=\"mix result\">Mixed - Error</th>");
                             _ = builder.AppendLine($"<th class=\"command\"><code>\"\"</code></th>");
                             _ = builder.AppendLine($"<th class=\"output\">{mix.ErrorOutput}</th></tr>");
