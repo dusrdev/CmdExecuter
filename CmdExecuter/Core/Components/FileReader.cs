@@ -20,9 +20,8 @@ namespace CmdExecuter.Core.Components
             Results = new SortedSet<FileView>(Comparers.FileViewComparer);
         }
 
-        public async Task<OneOf<Success, Error>> ReadLinesFromAllTextFilesInDirectoryAsync(CancellationToken token = default) {
-            string currentDirectory = Directory.GetCurrentDirectory();
-            var textFiles = Directory.GetFiles(currentDirectory, "*.txt");
+        public async Task<OneOf<Success, Error>> ReadLinesFromAllTextFilesInDirectoryAsync(string directory, CancellationToken token = default) {
+            var textFiles = Directory.GetFiles(directory, "*.txt");
 
             ConcurrentBag<Task<FileView>> taskBag = new();
             FileView[] files = null;
