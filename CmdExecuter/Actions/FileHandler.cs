@@ -2,8 +2,6 @@
 using CmdExecuter.Core.Helpers;
 using CmdExecuter.Core.Models;
 
-using OneOf;
-
 using Spectre.Console;
 
 using System.Collections.Generic;
@@ -15,17 +13,21 @@ namespace CmdExecuter.Actions {
 
         private SortedSet<FileExecutionOutput> FileOutputs { get; set; }
 
+        private string PathToResources { get; init; }
+
         private int Successes = 0;
         private int Errors = 0;
 
-        public FileHandler() { }
+        public FileHandler(string pathToResources) {
+            PathToResources = pathToResources;
+        }
 
         /// <summary>
         /// Gets a list of the selected file names
         /// </summary>
         public void ScanForFiles() {
             FileReader reader = new();
-            var fileRead = Task.Run(() => reader.ReadLinesFromAllTextFilesInDirectoryAsync());
+            var fileRead = Task.Run(() => reader.ReadLinesFromAllTextFilesInDirectoryAsync(PathToResources));
             fileRead.Wait();
 
             fileRead.Result.Switch(success => {
@@ -85,26 +87,27 @@ namespace CmdExecuter.Actions {
             AnsiConsole.MarkupLine("");
 
             AnsiConsole.MarkupLine("[violet]Beginning Execution.[/]");
+            AnsiConsole.MarkupLine("");
 
             foreach (var file in Files) {
                 FileExecutionOutput fileOutput = new(file.FileName);
 
-                AnsiConsole.MarkupLine("");
                 AnsiConsole.MarkupLine($"[white][violet]==[/] Executing [springgreen1]{file.Commands.Length}[/] commands in file: [springgreen1]{file.FileName}[/][/]");
                 AnsiConsole.MarkupLine("");
 
-                for (int i = 0; i < file.Commands.Length; i++) {
-                    AnsiConsole.Markup($"[White][darkslategray1]----[/] Executing command: [darkslategray1]{i + 1}[/][violet]  -->  [/][/]");
+                foreach (var command in file.Commands) {
+                    AnsiConsole.MarkupLine($"[White][darkslategray1]====[/] [underline]Executing command[/]:[/]");
+                    AnsiConsole.MarkupLine($"[white]-------- [darkslategray1]{command}[/][/]");
+                    AnsiConsole.Markup("[violet]---------------->  [/]");
 
-                    AnsiConsole.Status().SpinnerStyle = new Style(foreground: Color.SpringGreen1);
+                    var executionResult = new CommandExecuter(command).Execute();
 
-                    var executionResult = new CommandExecuter(file.Commands[i]).Execute();
-
-                    executionResult.Switch(success => {
-                        AnsiConsole.MarkupLine("[springgreen1]Success[/]");
-                        fileOutput.AddResult(success);
-                        Successes++;
-                    },
+                    executionResult.Switch(
+                        success => {
+                            AnsiConsole.MarkupLine("[springgreen1]Success[/]");
+                            fileOutput.AddResult(success);
+                            Successes++;
+                        },
                         error => {
                             AnsiConsole.MarkupLine("[#990000]Fail[/]");
                             fileOutput.AddResult(error);
@@ -116,6 +119,7 @@ namespace CmdExecuter.Actions {
                             Successes++;
                             Errors++;
                         });
+                    AnsiConsole.MarkupLine("");
                 }
 
                 FileOutputs.Add(fileOutput);
@@ -137,7 +141,8 @@ namespace CmdExecuter.Actions {
 
             AnsiConsole.MarkupLine("");
             AnsiConsole.MarkupLine(title);
-
+            AnsiConsole.MarkupLine("");
+            DisplayStatistics();
             AnsiConsole.MarkupLine("");
 
             if (AnsiConsole.Confirm("[white]Do you want to export detailed [yellow]HTML[/] report to folder?[/]")) {
@@ -161,6 +166,21 @@ namespace CmdExecuter.Actions {
                     AnsiConsole.MarkupLine($"[#990000]{error.Message}[/]");
                 });
             AnsiConsole.MarkupLine("");
+        }
+
+        /// <summary>
+        /// Displays success rate at the end of all execution
+        /// </summary>
+        private void DisplayStatistics() {
+            int total = Successes + Errors;
+
+            if (total == 0) {
+                return;
+            }
+
+            decimal successRate = ((decimal)Successes / (decimal)total) * 100;
+
+            AnsiConsole.MarkupLine($"[white]Execution success rate: [springgreen1]{successRate:0.##}[/]%[/]");
         }
     }
 }
