@@ -1,8 +1,9 @@
 ﻿namespace CmdExecuter.Core.Models {
     internal class CommandExecutionSuccess : CommandExecutionResult {
-        public CommandExecutionSuccess(string command, string output) {
+        public CommandExecutionSuccess(string command, string successfulOutput) {
             Command = command;
-            Output = output;
+            SuccessfulOutput = successfulOutput;
+            ErrorOutput = null;
         }
     }
 }

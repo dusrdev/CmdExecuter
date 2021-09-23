@@ -1,8 +1,9 @@
 ﻿namespace CmdExecuter.Core.Models {
     internal class CommandExecutionError : CommandExecutionResult {
-        public CommandExecutionError(string command, string output) {
+        public CommandExecutionError(string command, string errorOutput) {
             Command = command;
-            Output = output;
+            SuccessfulOutput = null;
+            ErrorOutput = errorOutput;
         }
     }
 }
