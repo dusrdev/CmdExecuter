@@ -115,11 +115,11 @@ h1 {
                             _ = builder.AppendLine($"<th class=\"output\">{error.ErrorOutput}</th></tr>");
                         },
                         mix => {
-                            _ = builder.AppendLine($"<tr><th class=\"mix result\">Mixed - Success</th>");
+                            _ = builder.AppendLine("<tr><th class=\"mix result\">Success</th>");
                             _ = builder.AppendLine($"<th class=\"command\"><code>{mix.Command}</code></th>");
                             _ = builder.AppendLine($"<th class=\"output\">{mix.SuccessfulOutput}</th></tr>");
-                            _ = builder.AppendLine($"<tr><th class=\"mix result\">Mixed - Error</th>");
-                            _ = builder.AppendLine($"<th class=\"command\"><code>\"\"</code></th>");
+                            _ = builder.AppendLine("<tr><th class=\"mix result\">Error</th>");
+                            _ = builder.AppendLine($"<th class=\"command\"><code>{mix.Command}</code></th>");
                             _ = builder.AppendLine($"<th class=\"output\">{mix.ErrorOutput}</th></tr>");
                         });
                 }
