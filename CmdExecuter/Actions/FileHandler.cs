@@ -4,6 +4,7 @@ using CmdExecuter.Core.Models;
 
 using Spectre.Console;
 
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -13,6 +14,8 @@ namespace CmdExecuter.Actions {
 
         private SortedSet<FileExecutionOutput> FileOutputs { get; set; }
 
+        private Stopwatch Watch { get; init; }
+
         private string PathToResources { get; init; }
 
         private int Successes = 0;
@@ -20,6 +23,7 @@ namespace CmdExecuter.Actions {
 
         public FileHandler(string pathToResources) {
             PathToResources = pathToResources;
+            Watch = new Stopwatch();
         }
 
         /// <summary>
@@ -88,11 +92,12 @@ namespace CmdExecuter.Actions {
 
             AnsiConsole.MarkupLine("[violet]Beginning Execution.[/]");
             AnsiConsole.MarkupLine("");
+            Watch.Start();
 
             foreach (var file in Files) {
                 FileExecutionOutput fileOutput = new(file.FileName);
 
-                AnsiConsole.MarkupLine($"[white][violet]==[/] Executing [springgreen1]{file.Commands.Length}[/] commands in file: [springgreen1]{file.FileName}[/][/]");
+                AnsiConsole.MarkupLine($"[white][violet]==[/] Executing [springgreen1]{file.Commands.Length}[/] commands in file: [springgreen1 underline]{file.FileName}[/][/]");
                 AnsiConsole.MarkupLine("");
 
                 foreach (var command in file.Commands) {
@@ -125,13 +130,15 @@ namespace CmdExecuter.Actions {
                 FileOutputs.Add(fileOutput);
             }
 
-            PromptToExportReport();
+            string executionTime = Watch.Stop();
+
+            PromptToExportReport(executionTime.AsSpan());
         }
 
         /// <summary>
         /// Gives the user the option to export errors to report or dismiss and follows up on selection.
         /// </summary>
-        private void PromptToExportReport() {
+        private void PromptToExportReport(ReadOnlySpan<char> executionTime) {
             string title = (Successes, Errors) switch {
                 (0, 0) => "[bold #990000]Nothing has been executed...[/]",
                 (_, 0) => "[bold white]All commands have executed [springgreen1]successfully[/][/]",
@@ -142,7 +149,7 @@ namespace CmdExecuter.Actions {
             AnsiConsole.MarkupLine("");
             AnsiConsole.MarkupLine(title);
             AnsiConsole.MarkupLine("");
-            DisplayStatistics();
+            DisplayStatistics(executionTime);
             AnsiConsole.MarkupLine("");
 
             if (AnsiConsole.Confirm("[white]Do you want to export detailed [yellow]HTML[/] report to folder?[/]")) {
@@ -171,7 +178,7 @@ namespace CmdExecuter.Actions {
         /// <summary>
         /// Displays success rate at the end of all execution
         /// </summary>
-        private void DisplayStatistics() {
+        private void DisplayStatistics(ReadOnlySpan<char> executionTime) {
             int total = Successes + Errors;
 
             if (total == 0) {
@@ -180,6 +187,7 @@ namespace CmdExecuter.Actions {
 
             decimal successRate = ((decimal)Successes / (decimal)total) * 100;
 
+            AnsiConsole.MarkupLine($"[white]Execution time: [springgreen1]{executionTime.ToString()}[/]%[/]");
             AnsiConsole.MarkupLine($"[white]Execution success rate: [springgreen1]{successRate:0.##}[/]%[/]");
         }
     }
