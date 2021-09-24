@@ -187,8 +187,7 @@ namespace CmdExecuter.Actions {
 
             decimal successRate = ((decimal)Successes / (decimal)total) * 100;
 
-            AnsiConsole.MarkupLine($"[white]Execution time: [springgreen1]{executionTime.ToString()}[/]%[/]");
-            AnsiConsole.MarkupLine($"[white]Execution success rate: [springgreen1]{successRate:0.##}[/]%[/]");
+            AnsiConsole.MarkupLine($"[white]Execution time: [springgreen1]{executionTime.ToString()}[/], success rate: [springgreen1]{successRate:0.##}%[/][/]");
         }
     }
 }
