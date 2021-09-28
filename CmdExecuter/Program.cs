@@ -6,6 +6,8 @@ using Spectre.Console;
 namespace CmdExecuter {
     class Program {
         static void Main() {
+            System.Console.Title = "CmdExecuter - by David Shnayder";
+
             var directoryHandler = new DirectoryHandler();
 
             if (directoryHandler.IsReady()) {
