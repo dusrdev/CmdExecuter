@@ -12,6 +12,8 @@ namespace CmdExecuter.Actions {
     internal class ReportExporter {
         private SortedSet<FileExecutionOutput> FileOutputs { get; init; }
         private string Report { get; set; }
+        private string ExecutionTime { get; init; }
+        private decimal SuccessRate { get; init; }
 
         /// <summary>
         /// Initializes the class
@@ -20,8 +22,10 @@ namespace CmdExecuter.Actions {
         /// <remarks>
         /// Continue with .CreateReport() -> Export()
         /// </remarks>
-        public ReportExporter(SortedSet<FileExecutionOutput> outputs) {
+        public ReportExporter(SortedSet<FileExecutionOutput> outputs, string executionTime, decimal successRate) {
             FileOutputs = outputs;
+            ExecutionTime = executionTime;
+            SuccessRate = successRate;
         }
 
         /// <summary>
@@ -36,10 +40,11 @@ body {
     white-space: pre-wrap;
     width: 98%;
     height: 100%;
+  font-family: 'Helvetica';
+  font-size: medium;
 }
 table {
   word-break: break-word;
-  font-family: 'Helvetica';
   border-collapse: collapse;
   font-size: small;
 }
@@ -57,9 +62,15 @@ tr {
   background-color: #FFFFFF;
 }
 h1 {
-    text-decoration: underline;
-    font-family: 'Comic Sans MS';
 	color: black;
+    text-decoration: underline;
+}
+strong {
+  color: black;
+  font-size: large;
+}
+i {
+  color: DodgerBlue;
 }
 .result {
   width: 10%;
@@ -83,8 +94,7 @@ h1 {
     background-color: #87ffff;
 }
 </style>
-</head>
-<body>";
+</head><title>Execution Report</title><body>";
             const string PageEnd = @"</body>
 </html>";
             const string StartTable = "<table>";
@@ -96,11 +106,15 @@ h1 {
   </tr>";
             var builder = new StringBuilder();
             _ = builder.Append(PageStart);
+            _ = builder.AppendLine("<h1>Statistics</h1>");
+            _ = builder.AppendLine($"<strong>Execution time: <i>{ExecutionTime}</i></strong>");
+            _ = builder.AppendLine($"<strong>Success rate: <i>{SuccessRate}%</i></strong>");
+
 
             foreach (var file in FileOutputs) {
-                _ = builder.AppendLine($"<h1>{file.FileName}</h1>");
-                _ = builder.AppendLine(StartTable);
-                _ = builder.AppendLine(TableTitle);
+                _ = builder.AppendLine($"<h1>Filename: <i>{file.FileName}</i></h1>");
+                _ = builder.Append(StartTable);
+                _ = builder.Append(TableTitle);
 
                 foreach (var result in file.Results) {
                     result.Switch(
@@ -124,7 +138,7 @@ h1 {
                         });
                 }
 
-                _ = builder.AppendLine(EndTable);
+                _ = builder.Append(EndTable);
             }
             _ = builder.Append(PageEnd);
             Report = builder.ToString().Trim('\r', '\n');
