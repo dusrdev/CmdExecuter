@@ -90,8 +90,6 @@ namespace CmdExecuter.Actions {
         public void Execute() {
             FileOutputs = new(Comparers.FileExecutionOutputComparer);
 
-            AnsiConsole.MarkupLine("");
-
             AnsiConsole.MarkupLine("[violet]Beginning Execution.[/]");
             AnsiConsole.MarkupLine("");
             Watch.Start();
