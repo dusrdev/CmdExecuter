@@ -13,7 +13,7 @@ namespace CmdExecuter.Actions {
     [springgreen1]-[/] you can create many of them, such as: [deepskyblue1]""WindowsRestore.txt""[/],[deepskyblue1]""CloudSyncing.txt""[/] and so on...
 [springgreen1]3.[/] Place all of them in the ""[springgreen1]Resources[/]"" folder you just created and run [bold deepskyblue1]CmdExecuter.exe[/].
 [springgreen1]4.[/] The app will scan and read all commands in all files and categorize them by file name
-[springgreen1]5.[/] then it will let you select which files you want to execute, and it will execute all selected files by order.
+[springgreen1]5.[/] then it will let you select which files you want to execute, and it will execute all selected files.
 [springgreen1]6.[/] and inform you of the result of every command execution, should you want to, it can produce a detailed report.
 
 [springgreen1 invert]Make sure to use this application only to execute commands that don't require further input

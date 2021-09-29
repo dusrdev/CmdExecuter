@@ -19,7 +19,7 @@ This app is intended for system administrators and people who constantly execute
     - you can create many of them, such as: **"WindowsRestore.txt"**, **"CloudSyncing.txt"** and so on...
 3. Place all of them in the "Resources" folder and run **CmdExecuter.exe**.
 4. The app will scan and read all commands in all files and categorize them by file name
-5. then it will let you select which files you want to execute, and it will execute all the commands of the selected files by order
+5. then it will let you select which files you want to execute, and it will execute all the commands of the selected files
     - All commands are executed separately so commands like **"cd .."** will not be remembered, if you want to execute commands that should be linked, write them in the same line connected with **"&"** to chain them.
 6. and inform you of the result of every command execution, should you want to, it can produce a detailed report.
 
