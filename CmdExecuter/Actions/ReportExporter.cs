@@ -12,8 +12,9 @@ namespace CmdExecuter.Actions {
     internal class ReportExporter {
         private SortedSet<FileExecutionOutput> FileOutputs { get; init; }
         private string Report { get; set; }
+        private string ComputerName { get; init; }
         private string ExecutionTime { get; init; }
-        private decimal SuccessRate { get; init; }
+        private string RoundedSuccessRate { get; init; }
 
         /// <summary>
         /// Initializes the class
@@ -22,10 +23,11 @@ namespace CmdExecuter.Actions {
         /// <remarks>
         /// Continue with .CreateReport() -> Export()
         /// </remarks>
-        public ReportExporter(SortedSet<FileExecutionOutput> outputs, string executionTime, decimal successRate) {
+        public ReportExporter(string computerName, SortedSet<FileExecutionOutput> outputs, string executionTime, string roundedSuccessRate) {
+            ComputerName = computerName;
             FileOutputs = outputs;
             ExecutionTime = executionTime;
-            SuccessRate = successRate;
+            RoundedSuccessRate = roundedSuccessRate;
         }
 
         /// <summary>
@@ -89,10 +91,6 @@ i {
     color: white;
     background-color: #990000;
 }
-.mix {
-    color: black;
-    background-color: #87ffff;
-}
 </style>
 </head><title>Execution Report</title><body>";
             const string PageEnd = @"</body>
@@ -106,9 +104,10 @@ i {
   </tr>";
             var builder = new StringBuilder();
             _ = builder.Append(PageStart);
-            _ = builder.AppendLine("<h1>Statistics</h1>");
+            _ = builder.AppendLine("<h1>General Information</h1>");
+            _ = builder.AppendLine($"<strong>Computer name: <i>{ComputerName}</i></strong>");
             _ = builder.AppendLine($"<strong>Execution time: <i>{ExecutionTime}</i></strong>");
-            _ = builder.AppendLine($"<strong>Success rate: <i>{SuccessRate}%</i></strong>");
+            _ = builder.AppendLine($"<strong>Success rate: <i>{RoundedSuccessRate}%</i></strong>");
 
 
             foreach (var file in FileOutputs) {
@@ -129,10 +128,10 @@ i {
                             _ = builder.AppendLine($"<th class=\"output\">{error.ErrorOutput}</th></tr>");
                         },
                         mix => {
-                            _ = builder.AppendLine("<tr><th class=\"mix result\">Success</th>");
+                            _ = builder.AppendLine("<tr><th class=\"success result\">Success</th>");
                             _ = builder.AppendLine($"<th class=\"command\"><code>{mix.Command}</code></th>");
                             _ = builder.AppendLine($"<th class=\"output\">{mix.SuccessfulOutput}</th></tr>");
-                            _ = builder.AppendLine("<tr><th class=\"mix result\">Error</th>");
+                            _ = builder.AppendLine("<tr><th class=\"error result\">Error</th>");
                             _ = builder.AppendLine($"<th class=\"command\"><code>{mix.Command}</code></th>");
                             _ = builder.AppendLine($"<th class=\"output\">{mix.ErrorOutput}</th></tr>");
                         });

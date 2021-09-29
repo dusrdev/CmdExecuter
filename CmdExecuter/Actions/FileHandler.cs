@@ -4,6 +4,7 @@ using CmdExecuter.Core.Models;
 
 using Spectre.Console;
 
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -20,7 +21,8 @@ namespace CmdExecuter.Actions {
         private int Successes = 0;
         private int Errors = 0;
 
-        private decimal SuccessRate { get; set; }
+        private string ComputerName { get; set; }
+        private string RoundedSuccessRate { get; set; }
         private string ExecutionTime { get; set; }
 
         public FileHandler(string pathToResources) {
@@ -32,6 +34,7 @@ namespace CmdExecuter.Actions {
         /// Gets a list of the selected file names
         /// </summary>
         public void ScanForFiles() {
+            ComputerName = Environment.MachineName;
             FileReader reader = new();
             var fileRead = Task.Run(() => reader.ReadLinesFromAllTextFilesInDirectoryAsync(PathToResources));
             fileRead.Wait();
@@ -162,7 +165,7 @@ namespace CmdExecuter.Actions {
         /// </summary>
         private void ExportReport() {
             AnsiConsole.MarkupLine("");
-            var reportExporter = new ReportExporter(FileOutputs, ExecutionTime, SuccessRate);
+            var reportExporter = new ReportExporter(ComputerName, FileOutputs, ExecutionTime, RoundedSuccessRate);
             reportExporter.CreateReport();
             var exportResult = reportExporter.Export();
             exportResult.Switch(
@@ -185,9 +188,10 @@ namespace CmdExecuter.Actions {
                 return;
             }
 
-            SuccessRate = ((decimal)Successes / (decimal)total) * 100;
+            decimal SuccessRate = ((decimal)Successes / (decimal)total) * 100;
+            RoundedSuccessRate = $"{SuccessRate:0.##}";
 
-            AnsiConsole.MarkupLine($"[white]Execution time: [springgreen1]{ExecutionTime}[/], success rate: [springgreen1]{SuccessRate:0.##}%[/][/]");
+            AnsiConsole.MarkupLine($"[white]Execution time: [springgreen1]{ExecutionTime}[/], success rate: [springgreen1]{RoundedSuccessRate}%[/][/]");
         }
     }
 }
