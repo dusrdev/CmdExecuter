@@ -26,8 +26,7 @@ This app is intended for system administrators and people who constantly execute
 ## Safety tips
 
 - The application was developed with using multiple files in purpose, use this to separate your commands and execute only what is required.
-- Always inspect the files **before** execution to prevent unwanted outcomes.
-- Make sure to test all commands beforehand to know the predictable outcome.
+- Always inspect the files and test all commands **before** execution to prevent unwanted outcomes.
 - Use absolute paths as this calls on **cmd.exe** which might not recognize the paths otherwise.
 
 ## Disclaimer
@@ -50,7 +49,7 @@ If you do not want to download, as with any other open source project, you can p
 ## FAQ
 
 - Why should I use this application instead of **".bat** files?
-This doesn't require you to know .bat commands and syntax rather simply the commands themselves, as well as having a wonderful interface thanks to [Spectre Console](https://spectreconsole.net/).
+This doesn't require you to know .bat commands and syntax rather simply the commands themselves, as well as having a wonderful interface thanks. Moreover, after you have build your base command files, you can execute them in whichever order and skip whichever file you want without further modification to the files, where as with **bat** you'd need to constantly modify at least one file according to your usage.
 - I want to request a feature / Add a feature that I coded myself
 Feel free to contact me via [email](dusrdev@gmail.com).
 - Which version is best to use?
