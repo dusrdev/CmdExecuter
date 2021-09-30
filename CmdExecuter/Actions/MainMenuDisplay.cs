@@ -1,8 +1,8 @@
 ﻿using CmdExecuter.Core.Models;
 
-using Spectre.Console;
-
 using System.Collections.Generic;
+
+using static CmdExecuter.Core.UI;
 
 namespace CmdExecuter.Actions {
     internal class MainMenuDisplay {
@@ -14,12 +14,10 @@ namespace CmdExecuter.Actions {
             _ = selectionOptions.TryAdd("Scan folder.", MainMenuSelection.ScanFolder);
             _ = selectionOptions.TryAdd("Display info.", MainMenuSelection.DisplayInfo);
 
-            var selection = AnsiConsole.Prompt(new SelectionPrompt<string>().
-                Title("[springgreen1]Options:[/]").
-                AddChoices(selectionOptions.Keys));
+            var selected = Selection("Main menu:", selectionOptions.Keys);
 
-            AnsiConsole.Clear();
-            return selectionOptions[selection];
+            Clear();
+            return selectionOptions[selected];
         }
     }
 }

@@ -1,6 +1,8 @@
 ﻿using CmdExecuter.Core.Components;
 
-using Spectre.Console;
+using System;
+
+using static CmdExecuter.Core.UI;
 
 namespace CmdExecuter.Actions {
     internal class DirectoryHandler {
@@ -16,25 +18,28 @@ namespace CmdExecuter.Actions {
 
         public bool IsReady() {
             if (!Creator.DoesResourcesDirectoryExist()) {
-                AnsiConsole.Markup("[white]Resources directory wasn't found, creating directory [darkslategray1]-->[/] [/]");
+                Print("Resources directory wasn't found, creating directory ", false);
+                Print("--> ", ConsoleColor.Cyan, false);
                 Creator.CreateResourcesDirectory().Switch(
                     success => {
-                        AnsiConsole.MarkupLine("[springgreen1]Success[/]");
-                        AnsiConsole.MarkupLine("");
-                        AnsiConsole.MarkupLine("[white]Now add command files and re-launch the application.[/]");
+                        Print("Success", ConsoleColor.Green);
+                        NewLine();
+                        Print("Now add command files and re-launch the application.");
                     },
                     error => {
-                        AnsiConsole.MarkupLine("[#990000]Fail[/]");
-                        AnsiConsole.MarkupLine("");
-                        AnsiConsole.MarkupLine("[white]Please create a directory inside the current directory and call it [springgreen1]Resources[/], and add your command files inside, then relaunch the application.[/]");
+                        Print("Fail", ConsoleColor.Red);
+                        NewLine();
+                        Print(new string[] { "Please create a directory inside the current directory and call it ", "Resources", ", and add your command files inside, then relaunch the application." },
+                            new ConsoleColor[] { BaseColor, HighlightColor, BaseColor });
                     });
-                AnsiConsole.MarkupLine("");
+                NewLine();
                 return false;
             }
 
             if (Creator.IsResourcesEmpty()) {
-                AnsiConsole.MarkupLine("[white]Resources directory is [#990000]Empty[/], add command files and re-launch the application.[/]");
-                AnsiConsole.MarkupLine("");
+                Print(new string[] { "Resources directory is ", "Empty", ", add command files and re-launch the application." },
+                    new ConsoleColor[] { BaseColor, HighlightColor, BaseColor });
+                NewLine();
                 return false;
             }
 
