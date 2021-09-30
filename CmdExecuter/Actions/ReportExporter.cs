@@ -10,7 +10,7 @@ using System.Text;
 
 namespace CmdExecuter.Actions {
     internal class ReportExporter {
-        private SortedSet<FileExecutionOutput> FileOutputs { get; init; }
+        private List<FileExecutionOutput> FileOutputs { get; init; }
         private string Report { get; set; }
         private string ComputerName { get; init; }
         private string ExecutionTime { get; init; }
@@ -23,7 +23,7 @@ namespace CmdExecuter.Actions {
         /// <remarks>
         /// Continue with .CreateReport() -> Export()
         /// </remarks>
-        public ReportExporter(string computerName, SortedSet<FileExecutionOutput> outputs, string executionTime, string roundedSuccessRate) {
+        public ReportExporter(string computerName, List<FileExecutionOutput> outputs, string executionTime, string roundedSuccessRate) {
             ComputerName = computerName;
             FileOutputs = outputs;
             ExecutionTime = executionTime;

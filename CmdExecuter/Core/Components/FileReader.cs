@@ -14,10 +14,10 @@ namespace CmdExecuter.Core.Components
 {
     internal class FileReader
     {
-        public SortedSet<FileView> Results { get; private set;  }
+        public List<FileView> Results { get; private set;  }
 
         public FileReader() {
-            Results = new SortedSet<FileView>(Comparers.FileViewComparer);
+            Results = new List<FileView>();
         }
 
         public async Task<OneOf<Success, Error>> ReadLinesFromAllTextFilesInDirectoryAsync(string directory, CancellationToken token = default) {
@@ -37,8 +37,10 @@ namespace CmdExecuter.Core.Components
             }
 
             foreach (var file in files) {
-                var add = Results.Add(file);
+                Results.Add(file);
             }
+
+            Results.Sort(Comparers.FileViewComparer);
 
             return Results.Any() ?
                 new Success("Successfully retrieved all lines from all text files in current folder.")

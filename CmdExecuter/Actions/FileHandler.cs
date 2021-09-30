@@ -13,7 +13,7 @@ namespace CmdExecuter.Actions {
 
         private List<FileView> SelectedFiles { get; set; }
 
-        private HashSet<FileExecutionOutput> FileOutputs { get; set; }
+        private List<FileExecutionOutput> FileOutputs { get; set; }
 
         private Stopwatch Watch { get; init; }
 
