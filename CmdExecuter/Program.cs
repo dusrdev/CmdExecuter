@@ -1,7 +1,7 @@
 ﻿using CmdExecuter.Actions;
 using CmdExecuter.Core.Models;
 
-using Spectre.Console;
+using static CmdExecuter.Core.UI;
 
 namespace CmdExecuter {
     class Program {
@@ -11,11 +11,11 @@ namespace CmdExecuter {
             var directoryHandler = new DirectoryHandler();
 
             if (directoryHandler.IsReady()) {
+                //DisplayFileScanner(directoryHandler.GetResourcesPath());
                 DisplayMainMenu(directoryHandler.GetResourcesPath());
             }
 
-            AnsiConsole.Markup("[white]Press any key to exit... [/]");
-            System.Console.ReadKey();
+            RequestAnyInput("Press any key to exit...");
         }
 
         /// <summary>
@@ -56,8 +56,8 @@ namespace CmdExecuter {
         /// Prompts the user to return to main menu
         /// </summary>
         private static void PromptToReturnToMainMenu(string pathToResources) {
-            if (AnsiConsole.Confirm("[white]Return to main menu?[/]")) {
-                AnsiConsole.Clear();
+            if (Confirm("Return to main menu")) {
+                Clear();
                 DisplayMainMenu(pathToResources);
             }
         }
