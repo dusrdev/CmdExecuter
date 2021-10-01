@@ -108,7 +108,7 @@ namespace CmdExecuter.Actions {
             foreach (var file in SelectedFiles) {
                 FileExecutionOutput fileOutput = new(file.FileName);
 
-                Print(new string[] { "== ", "Executing ", $"file.Commands.Length ", "commands in file: ", $"{file.FileName}" },
+                Print(new string[] { "== ", "Executing ", $"{file.Commands.Length} ", "commands in file: ", $"{file.FileName}" },
                     new ConsoleColor[] { ConsoleColor.Magenta, BaseColor, ConsoleColor.Green, BaseColor, ConsoleColor.Green });
                 NewLine();
 
@@ -154,7 +154,6 @@ namespace CmdExecuter.Actions {
         /// Gives the user the option to export errors to report or dismiss and follows up on selection.
         /// </summary>
         private void PromptToExportReport() {
-            NewLine();
             switch ((Successes, Errors)) {
                 case (0, 0): {
                         Print("Nothing has been executed...", ConsoleColor.Red);
@@ -216,7 +215,7 @@ namespace CmdExecuter.Actions {
             decimal SuccessRate = ((decimal)Successes / (decimal)total) * 100;
             RoundedSuccessRate = $"{SuccessRate:0.##}";
 
-            Print(new string[] { "Execution time:", ExecutionTime, ", success rate: ", $"{RoundedSuccessRate}%" },
+            Print(new string[] { "Execution time: ", ExecutionTime, ", success rate: ", $"{RoundedSuccessRate}%" },
                 new ConsoleColor[] { BaseColor, ConsoleColor.Green, BaseColor, ConsoleColor.Green });
         }
     }
